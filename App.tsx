@@ -7,9 +7,12 @@ import Lotus from './components/Lotus';
 
 const App: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
+  const [speed, setSpeed] = useState(0.2);
+  const [density, setDensity] = useState(1.0);
+  const [saturation, setSaturation] = useState(0.6);
 
   return (
-    <div className="w-full h-screen bg-black relative">
+    <div className="w-full h-screen bg-black relative select-none">
       <Canvas
         shadows
         gl={{ antialias: false, stencil: false, depth: true }}
@@ -23,7 +26,12 @@ const App: React.FC = () => {
         <pointLight position={[-10, 5, -10]} intensity={0.5} color="#aa44ff" />
 
         <Suspense fallback={null}>
-          <Lotus isPaused={isPaused} />
+          <Lotus 
+            isPaused={isPaused} 
+            speed={speed} 
+            density={density} 
+            saturation={saturation}
+          />
           
           <Stars 
             radius={100} 
@@ -55,27 +63,58 @@ const App: React.FC = () => {
         />
       </Canvas>
 
-      {/* UI Overlay */}
-      <div className="absolute top-8 left-8 z-10 pointer-events-none">
-        <h1 className="text-white text-3xl font-light tracking-widest opacity-80 uppercase">
-          Ethereal Particle Lotus
-        </h1>
-        <p className="text-blue-300 text-sm mt-2 font-mono tracking-tighter opacity-60">
-          Simulating 150,000+ Quantum Points
-        </p>
-      </div>
+      {/* UI Overlay - Controls Only */}
+      <div className="absolute bottom-8 right-8 z-10 flex flex-col gap-6 w-64">
+        <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-5 rounded-2xl flex flex-col gap-4">
+          
+          {/* Speed Control */}
+          <div className="flex flex-col gap-1">
+            <div className="flex justify-between text-[10px] text-white/60 font-mono uppercase tracking-wider">
+              <span>Bloom Speed</span>
+              <span>{speed.toFixed(2)}x</span>
+            </div>
+            <input 
+              type="range" min="0" max="1" step="0.01" 
+              value={speed} 
+              onChange={(e) => setSpeed(parseFloat(e.target.value))}
+              className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-400"
+            />
+          </div>
 
-      <div className="absolute bottom-8 right-8 z-10 flex flex-col gap-4">
-        <button 
-          onClick={() => setIsPaused(!isPaused)}
-          className="bg-white/5 hover:bg-white/10 border border-white/20 text-white px-6 py-2 rounded-full backdrop-blur-md transition-all duration-300 font-light text-sm tracking-widest pointer-events-auto"
-        >
-          {isPaused ? 'RESUME BLOOM' : 'PAUSE BLOOM'}
-        </button>
-        <div className="bg-black/40 border border-white/10 px-4 py-2 rounded-lg text-[10px] text-white/40 font-mono">
-           SPEED: 0.1x (Slow-Mo) <br/>
-           DENSITY: 2.0x (High Density) <br/>
-           SATURATION: 40% (Natural)
+          {/* Density Control */}
+          <div className="flex flex-col gap-1">
+            <div className="flex justify-between text-[10px] text-white/60 font-mono uppercase tracking-wider">
+              <span>Particle Density</span>
+              <span>{density.toFixed(1)}x</span>
+            </div>
+            <input 
+              type="range" min="0.1" max="2.5" step="0.1" 
+              value={density} 
+              onChange={(e) => setDensity(parseFloat(e.target.value))}
+              className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-purple-400"
+            />
+          </div>
+
+          {/* Saturation Control */}
+          <div className="flex flex-col gap-1">
+            <div className="flex justify-between text-[10px] text-white/60 font-mono uppercase tracking-wider">
+              <span>Color Saturation</span>
+              <span>{(saturation * 100).toFixed(0)}%</span>
+            </div>
+            <input 
+              type="range" min="0" max="1" step="0.01" 
+              value={saturation} 
+              onChange={(e) => setSaturation(parseFloat(e.target.value))}
+              className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-gold-400"
+            />
+          </div>
+
+          <button 
+            onClick={() => setIsPaused(!isPaused)}
+            className="mt-2 w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white py-2 rounded-xl transition-all duration-300 font-light text-xs tracking-widest"
+          >
+            {isPaused ? 'RESUME ANIMATION' : 'PAUSE ANIMATION'}
+          </button>
         </div>
       </div>
     </div>
